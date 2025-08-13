@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fashion Showcase</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f9f9f9;
+  }
+  h1 {
+    margin: 0;
+    padding: 1rem;
+    background: #333;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+  }
+  /* Card phong cách */
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease, filter 0.4s ease;
+  }
+  .card p {
+    margin: 0;
+    padding: 0.6rem;
+    background: #fff;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.95rem;
+    border-top: 1px solid #eee;
+  }
+  .card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+  .card:hover img {
+    transform: scale(1.08);
+    filter: brightness(1.05);
+  }
+
+  /* Cấp 3 */
+  #level3 {
+    display: none;
+    padding: 1rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  #level3.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Outfit cấp 3 */
+  .outfit {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .outfit:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+  .outfit img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .outfit:hover img {
+    transform: scale(1.05);
+  }
+  .outfit h3 {
+    margin: 0;
+    padding: 0.5rem;
+  }
+
+  /* Nút */
+  button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.4rem;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  }
+  button:hover {
+    background: #555;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+</style>
+</head>
+<body>
+
+<!-- Nữ -->
+<h1>Thời trang Nữ</h1>
+<div class="grid" id="female-styles"></div>
+
+<!-- Nam -->
+<h1>Thời trang Nam</h1>
+<div class="grid" id="male-styles"></div>
+
+<!-- Cấp 3 -->
+<section id="level3">
+  <h1 id="style-title"></h1>
+  <div class="grid" id="outfit-list"></div>
+  <button onclick="backToMain()">Quay lại</button>
+</section>
+
+<script>
+  const maleStyles = [
+    {key: "casual", name: "Phong cách thường ngày"},
+    {key: "business", name: "Công sở / Trang trọng"},
+    {key: "streetwear", name: "Đường phố"},
+    {key: "athleisure", name: "Thể thao thời trang"},
+    {key: "outdoor", name: "Ngoài trời"},
+    {key: "minimal", name: "Tối giản"}
+  ];
+
+  const femaleStyles = [
+    {key: "casual", name: "Phong cách thường ngày"},
+    {key: "elegant", name: "Thanh lịch / Dự tiệc"},
+    {key: "boho", name: "Bohemian"},
+    {key: "athleisure", name: "Thể thao thời trang"},
+    {key: "streetwear", name: "Đường phố"},
+    {key: "minimal", name: "Tối giản"}
+  ];
+
+  const outfitsData = [];
+
+  function seedData() {
+    maleStyles.forEach(style => {
+      for (let i = 1; i <= 4; i++) {
+        outfitsData.push({
+          gender: "nam",
+          style: style.key,
+          name: `${style.name} ${i}`,
+          shortDescription: "Mô tả ngắn gọn...",
+          price: 500000 + i * 10000,
+          images: [`https://picsum.photos/seed/${style.key}-${i}/400/300`]
+        });
+      }
+    });
+    femaleStyles.forEach(style => {
+      for (let i = 1; i <= 4; i++) {
+        outfitsData.push({
+          gender: "nu",
+          style: style.key,
+          name: `${style.name} ${i}`,
+          shortDescription: "Mô tả ngắn gọn...",
+          price: 600000 + i * 10000,
+          images: [`https://picsum.photos/seed/${style.key}-f-${i}/400/300`]
+        });
+      }
+    });
+  }
+
+  function renderStyles() {
+    const femaleContainer = document.getElementById("female-styles");
+    femaleStyles.forEach(style => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="https://picsum.photos/seed/${style.key}-f/400/300" alt="${style.name}">
+        <p>${style.name}</p>
+      `;
+      card.addEventListener("click", () => showOutfits("nu", style));
+      femaleContainer.appendChild(card);
+    });
+
+    const maleContainer = document.getElementById("male-styles");
+    maleStyles.forEach(style => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="https://picsum.photos/seed/${style.key}-m/400/300" alt="${style.name}">
+        <p>${style.name}</p>
+      `;
+      card.addEventListener("click", () => showOutfits("nam", style));
+      maleContainer.appendChild(card);
+    });
+  }
+
+  function showOutfits(gender, style) {
+    window.scrollTo(0, 0);
+    document.getElementById("female-styles").style.display = "none";
+    document.getElementById("male-styles").style.display = "none";
+    document.querySelectorAll("h1")[0].style.display = "none";
+    document.querySelectorAll("h1")[1].style.display = "none";
+
+    const level3 = document.getElementById("level3");
+    document.getElementById("style-title").textContent = `${style.name} (${gender === "nam" ? "Nam" : "Nữ"})`;
+
+    const list = outfitsData.filter(o => o.gender === gender && o.style === style.key);
+    const container = document.getElementById("outfit-list");
+    container.innerHTML = list.map(o => `
+      <div class="outfit">
+        <img src="${o.images[0]}" alt="${o.name}">
+        <h3>${o.name}</h3>
+        <p>${o.shortDescription}</p>
+        <p><strong>${o.price.toLocaleString()}₫</strong></p>
+      </div>
+    `).join('');
+
+    level3.style.display = "block";
+    requestAnimationFrame(() => {
+      level3.classList.add("show");
+    });
+  }
+
+  function backToMain() {
+    const level3 = document.getElementById("level3");
+    level3.classList.remove("show");
+    setTimeout(() => {
+      level3.style.display = "none";
+      document.getElementById("female-styles").style.display = "grid";
+      document.getElementById("male-styles").style.display = "grid";
+      document.querySelectorAll("h1")[0].style.display = "block";
+      document.querySelectorAll("h1")[1].style.display = "block";
+    }, 400);
+  }
+
+  seedData();
+  renderStyles();
+</script>
+
+</body>
+</html>
